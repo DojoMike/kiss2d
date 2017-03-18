@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Bridge.Html5;
 
 namespace Kiss2D
@@ -9,6 +10,8 @@ namespace Kiss2D
     /// </summary>
     static class Canvas
     {
+        public static Dictionary<string, HTMLImageElement> Graphics = new Dictionary<string, HTMLImageElement>();
+
         private static bool Created = false;
         private static HTMLCanvasElement CanvasElement = new HTMLCanvasElement();
         private static CanvasRenderingContext2D Context;
@@ -125,7 +128,32 @@ namespace Kiss2D
 
         #endregion
 
-        #region Methods
+        #region Methods from CanvasElement
+        // Nothing here yet
+        #endregion
+
+        #region Methods from Context
+        
+        public static void ClearRect(int Left, int Top, int Right, int Bottom)
+        {
+            Context.ClearRect(Left, Top, Right, Bottom);
+        }
+        public static void FillRect(int Left, int Top, int Right, int Bottom)
+        {
+            Context.FillRect(Left, Top, Right, Bottom);
+        }
+        public static void DrawGraphic(string Path, int sx, int sy, int swidth, int sheight, int dx = -1, int dy = -1, int dwidth = -1, int dheight = -1)
+        {
+            var img = Graphics.Get(Path);
+            if (dx == -1 || dy == -1 || dwidth == -1 || dheight == -1)
+                Context.DrawImage(img, sx, sy, swidth, sheight);
+            else
+                Context.DrawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+        }
+
+        #endregion
+
+        #region Other public Methods
 
         /// <summary>
         /// Sets up the CanvasElement and its context
@@ -162,19 +190,9 @@ namespace Kiss2D
         /// </summary>
         /// <param name="EventName">The event name (i.e. "click", "keydown", "touchstart" etc.)</param>
         /// <param name="Callback">The code to run when the event is triggered</param>
-        public static void AddEvent(string EventName, Action Callback)
+        public static void AddEvent(string EventName, Action<Event> Callback)
         {
-            CanvasElement.AddEventListener(EventName, Callback);
-        }
-
-        // These just call the equivalent canvas or context functions
-        public static void ClearRect(int Left, int Top, int Right, int Bottom)
-        {
-            Context.ClearRect(Left, Top, Right, Bottom);
-        }
-        public static void FillRect(int Left, int Top, int Right, int Bottom)
-        {
-            Context.FillRect(Left, Top, Right, Bottom);
+            Window.AddEventListener(EventName, Callback);
         }
 
         /// <summary>
@@ -199,6 +217,23 @@ namespace Kiss2D
             if (!Paused)
                 Window.RequestAnimationFrame(Step);
         }
+
+        /// <summary>
+        /// Constructor - Loads the image and sets instance variables
+        /// </summary>
+        /// <param name="source">The path to an image file</param>
+        public static void LoadGraphic(string source)
+        {
+            var img = new HTMLImageElement();
+            img.Style.Visibility = Visibility.Hidden;
+            img.Src = source;
+            Document.Body.AppendChild(img);
+            Graphics.Add(source, img);
+        }
+
+        #endregion
+
+        #region Private methods
 
         /// <summary>
         /// This calls the user-defined animation loop

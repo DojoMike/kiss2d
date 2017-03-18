@@ -24178,6 +24178,7 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
     /**
      * @memberof System
      * @callback System.Action
+     * @param   {Event}    arg
      * @return  {void}
      */
 
@@ -24193,6 +24194,7 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
      */
     Bridge.define("Kiss2D.Canvas", {
         statics: {
+            graphics: null,
             created: false,
             canvasElement: null,
             context: null,
@@ -24200,6 +24202,7 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
             paused: false,
             config: {
                 init: function () {
+                    this.graphics = new (System.Collections.Generic.Dictionary$2(String,HTMLImageElement))();
                     this.canvasElement = document.createElement('canvas');
                 }
             },
@@ -24497,6 +24500,24 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
             setFillStyle: function (value) {
                 Kiss2D.Canvas.context.fillStyle = value;
             },
+            clearRect: function (Left, Top, Right, Bottom) {
+                Kiss2D.Canvas.context.clearRect(Left, Top, Right, Bottom);
+            },
+            fillRect: function (Left, Top, Right, Bottom) {
+                Kiss2D.Canvas.context.fillRect(Left, Top, Right, Bottom);
+            },
+            drawGraphic: function (Path, sx, sy, swidth, sheight, dx, dy, dwidth, dheight) {
+                if (dx === void 0) { dx = -1; }
+                if (dy === void 0) { dy = -1; }
+                if (dwidth === void 0) { dwidth = -1; }
+                if (dheight === void 0) { dheight = -1; }
+                var img = Kiss2D.Canvas.graphics.get(Path);
+                if (dx === -1 || dy === -1 || dwidth === -1 || dheight === -1) {
+                    Kiss2D.Canvas.context.drawImage(img, sx, sy, swidth, sheight);
+                } else {
+                    Kiss2D.Canvas.context.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
+                }
+            },
             /**
              * Sets up the CanvasElement and its context
              <param name="UseDefaults">Set to true to have the canvas take up the entire screen; the background color will also be turned black to make sure it worked and all that.</param>
@@ -24544,13 +24565,7 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
              * @return  {void}
              */
             addEvent: function (EventName, Callback) {
-                Kiss2D.Canvas.canvasElement.addEventListener(EventName, Callback);
-            },
-            clearRect: function (Left, Top, Right, Bottom) {
-                Kiss2D.Canvas.context.clearRect(Left, Top, Right, Bottom);
-            },
-            fillRect: function (Left, Top, Right, Bottom) {
-                Kiss2D.Canvas.context.fillRect(Left, Top, Right, Bottom);
+                window.addEventListener(EventName, Callback);
             },
             /**
              * Sets up the canvas's animation loop - call this before calling Pause, obviously :)
@@ -24583,6 +24598,23 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
                 if (!Kiss2D.Canvas.paused) {
                     window.requestAnimationFrame(Kiss2D.Canvas.step);
                 }
+            },
+            /**
+             * Constructor - Loads the image and sets instance variables
+             *
+             * @static
+             * @public
+             * @this Kiss2D.Canvas
+             * @memberof Kiss2D.Canvas
+             * @param   {string}    source    The path to an image file
+             * @return  {void}
+             */
+            loadGraphic: function (source) {
+                var img = new Image();
+                img.style.visibility = "hidden";
+                img.src = source;
+                document.body.appendChild(img);
+                Kiss2D.Canvas.graphics.add(source, img);
             },
             /**
              * This calls the user-defined animation loop
@@ -24627,7 +24659,9 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
 
     Bridge.define("TestGame.App", {
         statics: {
-            x: 0
+            x: 0,
+            y: 0,
+            direction: 0
         },
         $main: function () {
             // Set up the canvas, or die tryin'!
@@ -24638,14 +24672,23 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
                 $e1 = System.Exception.create($e1);
                 if (Bridge.is($e1, Kiss2D.KissException)) {
                     window.alert("Oh crap!  Your browser doesn't support the HTML5 stuff we need to make this game work.  Please enable JavaScript or switch to a different browser (like Chrome or Firefox).");
+                    return;
                 } else {
                     throw $e1;
                 }
             }
+
+            // Try to load an image
+            Kiss2D.Canvas.loadGraphic("images/ball.png");
+
+            // Our animation loop does look kinda Pong-like
             Kiss2D.Canvas.startAnimationLoop($asm.$.TestGame.App.f1);
 
-            // Test adding an event - just a simple onclick for now
-            Kiss2D.Canvas.addEvent("click", $asm.$.TestGame.App.f2);
+            // Test adding an event - gettin fancy this time with keyboard events
+            // NOTE: I had to change the event listener from the canvas to the Window element.
+            // Doing it this way might also help with other events, like onresize etc. too
+            // so down the road, we might want to have this just be fullscreen all the time
+            Kiss2D.Canvas.addEvent("keydown", $asm.$.TestGame.App.f2);
         }
     });
 
@@ -24653,14 +24696,25 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
 
     Bridge.apply($asm.$.TestGame.App, {
         f1: function () {
-            TestGame.App.x = (TestGame.App.x + 1) | 0;
+            var speed = 4;
+            if (TestGame.App.direction === 38 && TestGame.App.y >= 4) {
+                TestGame.App.y = (TestGame.App.y - speed) | 0;
+            } else {
+                if (TestGame.App.direction === 40 && TestGame.App.y <= ((window.innerHeight - 64) | 0)) {
+                    TestGame.App.y = (TestGame.App.y + speed) | 0;
+                }
+            }
+
+            Kiss2D.Canvas.drawGraphic("images/ball.png", 64, 32, 16, 16);
+
             Kiss2D.Canvas.setFillStyle("blue");
-            Kiss2D.Canvas.fillRect(32, 32, 32, 32);
-            Kiss2D.Canvas.setFillStyle("rgba(255, 0, 0, 0.5)");
-            Kiss2D.Canvas.fillRect(TestGame.App.x, 48, 32, 32);
+            Kiss2D.Canvas.fillRect(((window.innerWidth - 10) | 0), 32, 8, 64);
+            Kiss2D.Canvas.setFillStyle("red");
+            Kiss2D.Canvas.fillRect(32, TestGame.App.y, 8, 64);
         },
-        f2: function () {
-            Kiss2D.Canvas.pause();
+        f2: function (e) {
+            var E = Bridge.cast(e, KeyboardEvent);
+            TestGame.App.direction = E.which;
         }
     });
 });

@@ -3,6 +3,7 @@
     /**
      * @memberof System
      * @callback System.Action
+     * @param   {Event}    arg
      * @return  {void}
      */
 
@@ -24,6 +25,7 @@ declare module Kiss2D {
     export interface CanvasFunc extends Function {
         prototype: Canvas;
         new (): Canvas;
+        graphics: System.Collections.Generic.Dictionary$2<string,HTMLImageElement>;
         /**
          * Gets/sets the width of the underlying HTML5 CanvasElement element
          *
@@ -290,6 +292,9 @@ declare module Kiss2D {
         setBackgroundColor(value: string): void;
         getFillStyle(): string;
         setFillStyle(value: string): void;
+        clearRect(Left: number, Top: number, Right: number, Bottom: number): void;
+        fillRect(Left: number, Top: number, Right: number, Bottom: number): void;
+        drawGraphic(Path: string, sx: number, sy: number, swidth: number, sheight: number, dx?: number, dy?: number, dwidth?: number, dheight?: number): void;
         /**
          * Sets up the CanvasElement and its context
          <param name="UseDefaults">Set to true to have the canvas take up the entire screen; the background color will also be turned black to make sure it worked and all that.</param>
@@ -313,9 +318,7 @@ declare module Kiss2D {
          * @param   {System.Action}    Callback     The code to run when the event is triggered
          * @return  {void}
          */
-        addEvent(EventName: string, Callback: {(): void}): void;
-        clearRect(Left: number, Top: number, Right: number, Bottom: number): void;
-        fillRect(Left: number, Top: number, Right: number, Bottom: number): void;
+        addEvent(EventName: string, Callback: {(arg: Event): void}): void;
         /**
          * Sets up the canvas's animation loop - call this before calling Pause, obviously :)
          *
@@ -337,6 +340,17 @@ declare module Kiss2D {
          * @return  {void}
          */
         pause(): void;
+        /**
+         * Constructor - Loads the image and sets instance variables
+         *
+         * @static
+         * @public
+         * @this Kiss2D.Canvas
+         * @memberof Kiss2D.Canvas
+         * @param   {string}    source    The path to an image file
+         * @return  {void}
+         */
+        loadGraphic(source: string): void;
         /**
          * This calls the user-defined animation loop
          *
