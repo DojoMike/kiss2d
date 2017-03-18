@@ -1,0 +1,9 @@
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Kiss2D.dll
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Kiss2D.pdb
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Bridge.dll
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Bridge.Html5.dll
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Bridge.xml
+C:\Media\Code\Projects\Kiss2D\Kiss2D\bin\Debug\Bridge.Html5.xml
+C:\Media\Code\Projects\Kiss2D\Kiss2D\obj\Debug\Kiss2D.csprojResolveAssemblyReference.cache
+C:\Media\Code\Projects\Kiss2D\Kiss2D\obj\Debug\Kiss2D.dll
+C:\Media\Code\Projects\Kiss2D\Kiss2D\obj\Debug\Kiss2D.pdb

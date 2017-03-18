@@ -1,0 +1,8 @@
+{
+    "output": "Bridge/output",
+    "generateTypeScript": true,
+    "combineScripts":  true
+
+    // More options available at: 
+    // http://bridge.net/docs/global-configuration
+}
