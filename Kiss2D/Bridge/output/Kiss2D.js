@@ -24195,6 +24195,7 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
     Bridge.define("Kiss2D.Canvas", {
         statics: {
             graphics: null,
+            orientation: 0,
             created: false,
             canvasElement: null,
             context: null,
@@ -24500,6 +24501,12 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
             setFillStyle: function (value) {
                 Kiss2D.Canvas.context.fillStyle = value;
             },
+            getLineWidth: function () {
+                return Kiss2D.Canvas.context.lineWidth;
+            },
+            setLineWidth: function (value) {
+                Kiss2D.Canvas.context.lineWidth = value;
+            },
             clearRect: function (Left, Top, Right, Bottom) {
                 Kiss2D.Canvas.context.clearRect(Left, Top, Right, Bottom);
             },
@@ -24517,6 +24524,19 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
                 } else {
                     Kiss2D.Canvas.context.drawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
                 }
+            },
+            moveTo: function (x, y) {
+                Kiss2D.Canvas.context.moveTo(x, y);
+            },
+            lineTo: function (x, y) {
+                Kiss2D.Canvas.context.lineTo(x, y);
+            },
+            rect: function (Left, Top, RIght, Bottom) {
+                Kiss2D.Canvas.context.rect(Left, Top, RIght, Bottom);
+            },
+            ellipse: function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise) {
+                if (counterClockwise === void 0) { counterClockwise = false; }
+                Kiss2D.Canvas.context.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise);
             },
             /**
              * Sets up the CanvasElement and its context
@@ -24541,6 +24561,8 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
                         Kiss2D.Canvas.setHeight(window.innerHeight);
                         Kiss2D.Canvas.setBackgroundColor("black");
                     }
+
+                    window.addEventListener("resize", $asm.$.Kiss2D.Canvas.f1);
 
                     // Add the CanvasElement element to the page
                     document.body.appendChild(Kiss2D.Canvas.canvasElement);
@@ -24640,6 +24662,69 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
         }
     });
 
+    Bridge.ns("Kiss2D.Canvas", $asm.$);
+
+    Bridge.apply($asm.$.Kiss2D.Canvas, {
+        f1: function () {
+            if (Kiss2D.Canvas.orientation === Kiss2D.Orientation.PORTRAIT) {
+                if (window.innerWidth > window.innerHeight) {
+                    // Left off here
+                } else {
+
+                }
+            }
+            if (Kiss2D.Canvas.orientation === Kiss2D.Orientation.LANDSCAPE) {
+                if (window.innerWidth > window.innerHeight) {
+
+                } else {
+
+                }
+            }
+        }
+    });
+
+    Bridge.define("Kiss2D.Game", {
+        statics: {
+            paused: false,
+            graphicsObjects: null,
+            soundObjects: null,
+            config: {
+                init: function () {
+                    this.graphicsObjects = new (System.Collections.Generic.List$1(Kiss2D.IDrawable))();
+                    this.soundObjects = new (System.Collections.Generic.List$1(Howl))();
+                }
+            },
+            pause: function () {
+                Kiss2D.Game.paused = !Kiss2D.Game.paused;
+            }
+        }
+    });
+
+    /**
+     * This super-simple interface is all about pausing the game.  Whehter it's for
+     sounds, graphics, game objects, or whatever, they all need a Pause method.
+     It's meant to be a toggle (since the game is either paused or not paused),
+     so there ARE no "resume" or "unpause" methodS.
+     *
+     * @abstract
+     * @class Kiss2D.IPausable
+     */
+    Bridge.define("Kiss2D.IPausable", {
+        $kind: "interface"
+    });
+
+    /**
+     * This super-simple interface just makes sure objects have a "Draw" method
+     Eventually the goal is to abstract this kind of stuff away, but for now I
+     know we'll need it for the animation loop and probably other stuff.
+     *
+     * @abstract
+     * @class Kiss2D.IDrawable
+     */
+    Bridge.define("Kiss2D.IDrawable", {
+        $kind: "interface"
+    });
+
     /**
      * Simple exception class that logs to the browser console
      *
@@ -24654,6 +24739,20 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
             // NOTE: I'm using Script.Call because Bridge doesn't seem to have that yet.
             // It has a Console.WriteLine, but it creates a console in the DOM (kinda stupid IMO).
             console.log(sMessage);
+        }
+    });
+
+    /**
+     * Used in the window onresize event to dynamically resize the canvas
+     *
+     * @class Kiss2D.Orientation
+     */
+    Bridge.define("Kiss2D.Orientation", {
+        $kind: "enum",
+        statics: {
+            NONE: 0,
+            PORTRAIT: 1,
+            LANDSCAPE: 2
         }
     });
 
@@ -24678,43 +24777,114 @@ Bridge.assembly("Kiss2D", function ($asm, globals) {
                 }
             }
 
-            // Try to load an image
+            // Load an image
             Kiss2D.Canvas.loadGraphic("images/ball.png");
 
+            // Create the game objects
+            var player = new Kiss2D.GameObject();
+            player.setX(32);
+            player.setY(320);
+            player.setWidth(8);
+            player.setHeight(64);
+            player.setSpeed(4);
+
+            var test = new Kiss2D.GameObject();
+            test.setX(32);
+            test.setY(0);
+            test.setWidth(8);
+            test.setHeight(64);
+            test.setSpeed(4);
+
             // Our animation loop does look kinda Pong-like
-            Kiss2D.Canvas.startAnimationLoop($asm.$.TestGame.App.f1);
+            Kiss2D.Canvas.startAnimationLoop(function () {
+                // Tested the collision method
+                if (player.collision(test)) {
+                    player.setY(320);
+                }
+
+                // Update the player's position
+                if (TestGame.App.direction === 38 && player.getY() >= 4) {
+                    player.setY((player.getY() - player.getSpeed()) | 0);
+                } else {
+                    if (TestGame.App.direction === 40 && player.getY() <= ((window.innerHeight - 64) | 0)) {
+                        player.setY((player.getY() + player.getSpeed()) | 0);
+                    }
+                }
+
+                Kiss2D.Canvas.drawGraphic("images/ball.png", 64, 32, 16, 16);
+
+                Kiss2D.Canvas.setFillStyle("red");
+                Kiss2D.Canvas.fillRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
+
+                Kiss2D.Canvas.setFillStyle("blue");
+                Kiss2D.Canvas.fillRect(test.getX(), test.getY(), test.getWidth(), test.getHeight());
+            });
 
             // Test adding an event - gettin fancy this time with keyboard events
             // NOTE: I had to change the event listener from the canvas to the Window element.
             // Doing it this way might also help with other events, like onresize etc. too
             // so down the road, we might want to have this just be fullscreen all the time
-            Kiss2D.Canvas.addEvent("keydown", $asm.$.TestGame.App.f2);
+            Kiss2D.Canvas.addEvent("keydown", $asm.$.TestGame.App.f1);
+            Kiss2D.Canvas.addEvent("keyup", $asm.$.TestGame.App.f2);
+
+            // Test Howler (worked)
+            // NOTE: I still have to build out the rest of the definition file, and also the spatial plug-in.
+            var sound = new Howl({ src: System.Array.init(["test.wav"], String), loop: true, onLoad: $asm.$.TestGame.App.f3 });
+            // sound.Play();
+
         }
     });
 
     Bridge.ns("TestGame.App", $asm.$);
 
     Bridge.apply($asm.$.TestGame.App, {
-        f1: function () {
-            var speed = 4;
-            if (TestGame.App.direction === 38 && TestGame.App.y >= 4) {
-                TestGame.App.y = (TestGame.App.y - speed) | 0;
+        f1: function (e) {
+            var E = Bridge.cast(e, KeyboardEvent);
+            if (E.which >= 37 && E.which <= 40) {
+                TestGame.App.direction = E.which;
             } else {
-                if (TestGame.App.direction === 40 && TestGame.App.y <= ((window.innerHeight - 64) | 0)) {
-                    TestGame.App.y = (TestGame.App.y + speed) | 0;
-                }
+                Kiss2D.Canvas.pause();
             }
-
-            Kiss2D.Canvas.drawGraphic("images/ball.png", 64, 32, 16, 16);
-
-            Kiss2D.Canvas.setFillStyle("blue");
-            Kiss2D.Canvas.fillRect(((window.innerWidth - 10) | 0), 32, 8, 64);
-            Kiss2D.Canvas.setFillStyle("red");
-            Kiss2D.Canvas.fillRect(32, TestGame.App.y, 8, 64);
         },
         f2: function (e) {
-            var E = Bridge.cast(e, KeyboardEvent);
-            TestGame.App.direction = E.which;
+            TestGame.App.direction = 0;
+        },
+        f3: function () {
+            console.log("Sound Loaded");
+        }
+    });
+
+    Bridge.define("Kiss2D.GameObject", {
+        inherits: [Kiss2D.IDrawable,Kiss2D.IPausable],
+        config: {
+            properties: {
+                X: 0,
+                Y: 0,
+                Width: 0,
+                Height: 0,
+                Speed: 0
+            },
+            alias: [
+            "draw", "Kiss2D$IDrawable$draw",
+            "pause", "Kiss2D$IPausable$pause"
+            ]
+        },
+        /**
+         * Checks for collisions with other instances
+         *
+         * @instance
+         * @public
+         * @this Kiss2D.GameObject
+         * @memberof Kiss2D.GameObject
+         * @param   {Kiss2D.GameObject}    other    Any other instance
+         * @return  {boolean}                       True if the 2 objects collide, false otherwise
+         */
+        collision: function (other) {
+            return (this.getX() <= ((other.getX() + other.getWidth()) | 0) && ((this.getX() + this.getWidth()) | 0) >= other.getX() && this.getY() <= ((other.getY() + other.getHeight()) | 0) && ((this.getHeight() + this.getY()) | 0) >= other.getY());
+        },
+        draw: function () {
+        },
+        pause: function () {
         }
     });
 });

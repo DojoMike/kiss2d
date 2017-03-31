@@ -37,13 +37,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Framework\Howler.cs" />
+    <Compile Include="Framework\IDrawable.cs" />
+    <Compile Include="Framework\IPausable.cs" />
     <Compile Include="Framework\KissException.cs" />
     <Compile Include="Framework\Canvas.cs" />
+    <Compile Include="Framework\Game.cs" />
+    <Compile Include="Framework\Orientation.cs" />
+    <Compile Include="Framework\GameObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bridge\output\readme.txt" />
     <Content Include="Bridge\www\demo.html" />
+    <Content Include="Bridge\www\Howler.min.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Bridge\bridge.json" />

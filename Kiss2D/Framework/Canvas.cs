@@ -11,6 +11,7 @@ namespace Kiss2D
     static class Canvas
     {
         public static Dictionary<string, HTMLImageElement> Graphics = new Dictionary<string, HTMLImageElement>();
+        public static Orientation Orientation = Orientation.NONE;
 
         private static bool Created = false;
         private static HTMLCanvasElement CanvasElement = new HTMLCanvasElement();
@@ -126,14 +127,26 @@ namespace Kiss2D
             }
         }
 
-        #endregion
+        public static double LineWidth
+        {
+            get
+            {
+                return Context.LineWidth;
+            }
+            set
+            {
+                Context.LineWidth = value;
+            }
+        }
 
+        #endregion
+        
         #region Methods from CanvasElement
         // Nothing here yet
         #endregion
 
         #region Methods from Context
-        
+
         public static void ClearRect(int Left, int Top, int Right, int Bottom)
         {
             Context.ClearRect(Left, Top, Right, Bottom);
@@ -150,7 +163,23 @@ namespace Kiss2D
             else
                 Context.DrawImage(img, sx, sy, swidth, sheight, dx, dy, dwidth, dheight);
         }
-
+        public static void MoveTo(int x, int y)
+        {
+            Context.MoveTo(x, y);
+        }
+        public static void LineTo(int x, int y)
+        {
+            Context.LineTo(x, y);
+        }
+        public static void Rect(int Left, int Top, int RIght, int Bottom)
+        {
+            Context.Rect(Left, Top, RIght, Bottom);
+        }
+        public static void Ellipse(int x, int y, int radiusX, int radiusY, int rotation, int startAngle, int endAngle, bool counterClockwise = false)
+        {
+            Context.Ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise);
+        }
+        
         #endregion
 
         #region Other public Methods
@@ -173,6 +202,32 @@ namespace Kiss2D
                     Height = Window.InnerHeight;
                     BackgroundColor = "black";
                 }
+
+                Window.AddEventListener("resize", () =>
+                {
+                    if (Orientation == Orientation.PORTRAIT)
+                    {
+                        if (Window.InnerWidth > Window.InnerHeight)
+                        {
+                            // Left off here
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    if (Orientation == Orientation.LANDSCAPE)
+                    {
+                        if (Window.InnerWidth > Window.InnerHeight)
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                });
 
                 // Add the CanvasElement element to the page
                 Document.Body.AppendChild(CanvasElement);

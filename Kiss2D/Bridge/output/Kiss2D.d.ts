@@ -26,6 +26,7 @@ declare module Kiss2D {
         prototype: Canvas;
         new (): Canvas;
         graphics: System.Collections.Generic.Dictionary$2<string,HTMLImageElement>;
+        orientation: Kiss2D.Orientation;
         /**
          * Gets/sets the width of the underlying HTML5 CanvasElement element
          *
@@ -292,9 +293,15 @@ declare module Kiss2D {
         setBackgroundColor(value: string): void;
         getFillStyle(): string;
         setFillStyle(value: string): void;
+        getLineWidth(): number;
+        setLineWidth(value: number): void;
         clearRect(Left: number, Top: number, Right: number, Bottom: number): void;
         fillRect(Left: number, Top: number, Right: number, Bottom: number): void;
         drawGraphic(Path: string, sx: number, sy: number, swidth: number, sheight: number, dx?: number, dy?: number, dwidth?: number, dheight?: number): void;
+        moveTo(x: number, y: number): void;
+        lineTo(x: number, y: number): void;
+        rect(Left: number, Top: number, RIght: number, Bottom: number): void;
+        ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterClockwise?: boolean): void;
         /**
          * Sets up the CanvasElement and its context
          <param name="UseDefaults">Set to true to have the canvas take up the entire screen; the background color will also be turned black to make sure it worked and all that.</param>
@@ -364,6 +371,52 @@ declare module Kiss2D {
     }
     var Canvas: CanvasFunc;
 
+    export interface Game {
+    }
+    export interface GameFunc extends Function {
+        prototype: Game;
+        new (): Game;
+        pause(): void;
+    }
+    var Game: GameFunc;
+
+    /**
+     * This super-simple interface is all about pausing the game.  Whehter it's for
+     sounds, graphics, game objects, or whatever, they all need a Pause method.
+     It's meant to be a toggle (since the game is either paused or not paused),
+     so there ARE no "resume" or "unpause" methodS.
+     *
+     * @abstract
+     * @class Kiss2D.IPausable
+     */
+    export interface IPausable {
+        /**
+         * Pause/un-pause the object when the game is paused/un-paused
+         *
+         * @instance
+         * @abstract
+         * @public
+         * @this Kiss2D.IPausable
+         * @memberof Kiss2D.IPausable
+         * @return  {void}
+         */
+        pause(): void;
+    }
+    var IPausable: Function;
+
+    /**
+     * This super-simple interface just makes sure objects have a "Draw" method
+     Eventually the goal is to abstract this kind of stuff away, but for now I
+     know we'll need it for the animation loop and probably other stuff.
+     *
+     * @abstract
+     * @class Kiss2D.IDrawable
+     */
+    export interface IDrawable {
+        draw(): void;
+    }
+    var IDrawable: Function;
+
     /**
      * Simple exception class that logs to the browser console
      *
@@ -377,6 +430,48 @@ declare module Kiss2D {
         new (sMessage: string): KissException;
     }
     var KissException: KissExceptionFunc;
+
+    /**
+     * Used in the window onresize event to dynamically resize the canvas
+     *
+     * @class Kiss2D.Orientation
+     */
+    export enum Orientation {
+        NONE = 0,
+        PORTRAIT = 1,
+        LANDSCAPE = 2
+    }
+
+    export interface GameObject extends Kiss2D.IDrawable,Kiss2D.IPausable {
+        getX(): number;
+        setX(value: number): void;
+        getY(): number;
+        setY(value: number): void;
+        getWidth(): number;
+        setWidth(value: number): void;
+        getHeight(): number;
+        setHeight(value: number): void;
+        getSpeed(): number;
+        setSpeed(value: number): void;
+        /**
+         * Checks for collisions with other instances
+         *
+         * @instance
+         * @public
+         * @this Kiss2D.GameObject
+         * @memberof Kiss2D.GameObject
+         * @param   {Kiss2D.GameObject}    other    Any other instance
+         * @return  {boolean}                       True if the 2 objects collide, false otherwise
+         */
+        collision(other: Kiss2D.GameObject): boolean;
+        draw(): void;
+        pause(): void;
+    }
+    export interface GameObjectFunc extends Function {
+        prototype: GameObject;
+        new (): GameObject;
+    }
+    var GameObject: GameObjectFunc;
 
 }
 

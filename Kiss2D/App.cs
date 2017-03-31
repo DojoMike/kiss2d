@@ -1,5 +1,6 @@
 ﻿using Bridge.Html5;
 using Kiss2D;
+using Howler;
 
 namespace TestGame
 {
@@ -20,24 +21,44 @@ namespace TestGame
                 return;
             }
 
-            // Try to load an image
+            // Load an image
             Canvas.LoadGraphic("images/ball.png");
+
+            // Create the game objects
+            var player = new GameObject();
+            player.X = 32;
+            player.Y = 320;
+            player.Width = 8;
+            player.Height = 64;
+            player.Speed = 4;
+
+            var test = new GameObject();
+            test.X = 32;
+            test.Y = 0;
+            test.Width = 8;
+            test.Height = 64;
+            test.Speed = 4;
 
             // Our animation loop does look kinda Pong-like
             Canvas.StartAnimationLoop(() =>
             {
-                int speed = 4;
-                if (direction == 38 && y >= 4)
-                    y -= speed;
-                else if (direction == 40 && y <= Window.InnerHeight - 64)
-                    y += speed;
+                // Tested the collision method
+                if (player.Collision(test))
+                    player.Y = 320;
+
+                // Update the player's position
+                if (direction == 38 && player.Y >= 4)
+                    player.Y -= player.Speed;
+                else if (direction == 40 && player.Y <= Window.InnerHeight - 64)
+                    player.Y += player.Speed;
 
                 Canvas.DrawGraphic("images/ball.png", 64, 32, 16, 16);
 
-                Canvas.FillStyle = "blue";
-                Canvas.FillRect(Window.InnerWidth - 10, 32, 8, 64);
                 Canvas.FillStyle = "red";
-                Canvas.FillRect(32, y, 8, 64);
+                Canvas.FillRect(player.X, player.Y, player.Width, player.Height);
+
+                Canvas.FillStyle = "blue";
+                Canvas.FillRect(test.X, test.Y, test.Width, test.Height);
             });
 
             // Test adding an event - gettin fancy this time with keyboard events
@@ -47,8 +68,29 @@ namespace TestGame
             Canvas.AddEvent("keydown", (e) =>
             {
                 var E = (KeyboardEvent)e;
-                direction = E.Which;
+                if (E.Which >= 37 && E.Which <= 40)
+                    direction = E.Which;
+                else
+                    Canvas.Pause();
             });
+            Canvas.AddEvent("keyup", (e) =>
+            {
+                direction = 0;
+            });
+
+            // Test Howler (worked)
+            // NOTE: I still have to build out the rest of the definition file, and also the spatial plug-in.
+            Howl sound = new Howl(new Options()
+            {
+                Src = new string[] { "test.wav" },
+                Loop = true,
+                OnLoad = () =>
+                {
+                    Bridge.Script.Call("console.log", "Sound Loaded");
+                }
+            });
+            // sound.Play();
+
         }
     }
 }
