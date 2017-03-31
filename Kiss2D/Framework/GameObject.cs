@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kiss2D
 {
-    class GameObject : IDrawable, IPausable
+    public class GameObject : IDrawable, IPausable
     {
         public int X { get; set; }
         public int Y { get; set; }

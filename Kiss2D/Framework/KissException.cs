@@ -6,7 +6,7 @@ namespace Kiss2D
     /// <summary>
     /// Simple exception class that logs to the browser console
     /// </summary>
-    class KissException : Exception
+    public class KissException : Exception
     {
         public KissException(string sMessage)
         {

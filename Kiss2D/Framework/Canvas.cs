@@ -8,7 +8,7 @@ namespace Kiss2D
     /// The Canvas class is an abstraction layer on top of the HTML5 canvas, its "context", and other stuff
     /// that's just not simple enough for a framework called KISS. :)
     /// </summary>
-    static class Canvas
+    public static class Canvas
     {
         public static Dictionary<string, HTMLImageElement> Graphics = new Dictionary<string, HTMLImageElement>();
         public static Orientation Orientation = Orientation.NONE;

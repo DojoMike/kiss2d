@@ -9,7 +9,7 @@ namespace Kiss2D
     /// <summary>
     /// Used in the window onresize event to dynamically resize the canvas
     /// </summary>
-    enum Orientation
+    public enum Orientation
     {
         NONE,
         PORTRAIT,

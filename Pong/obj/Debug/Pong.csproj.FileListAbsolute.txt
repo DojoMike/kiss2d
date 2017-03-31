@@ -1,0 +1,11 @@
+C:\Media\Code\Projects\public\Kiss2D\Pong\obj\Debug\Pong.csprojResolveAssemblyReference.cache
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Pong.dll
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Pong.pdb
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Bridge.dll
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Bridge.Html5.dll
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Kiss2D.dll
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Kiss2D.pdb
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Bridge.xml
+C:\Media\Code\Projects\public\Kiss2D\Pong\bin\Debug\Bridge.Html5.xml
+C:\Media\Code\Projects\public\Kiss2D\Pong\obj\Debug\Pong.dll
+C:\Media\Code\Projects\public\Kiss2D\Pong\obj\Debug\Pong.pdb

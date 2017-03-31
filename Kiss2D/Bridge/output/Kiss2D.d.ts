@@ -18,6 +18,7 @@ declare module Kiss2D {
      *
      * @static
      * @abstract
+     * @public
      * @class Kiss2D.Canvas
      */
     export interface Canvas {
@@ -420,6 +421,7 @@ declare module Kiss2D {
     /**
      * Simple exception class that logs to the browser console
      *
+     * @public
      * @class Kiss2D.KissException
      * @augments System.Exception
      */
@@ -434,6 +436,7 @@ declare module Kiss2D {
     /**
      * Used in the window onresize event to dynamically resize the canvas
      *
+     * @public
      * @class Kiss2D.Orientation
      */
     export enum Orientation {
@@ -472,18 +475,4 @@ declare module Kiss2D {
         new (): GameObject;
     }
     var GameObject: GameObjectFunc;
-
-}
-
-/// <reference path="./bridge.d.ts" />
-
-declare module TestGame {
-    export interface App {
-    }
-    export interface AppFunc extends Function {
-        prototype: App;
-        new (): App;
-        main(): void;
-    }
-    var App: AppFunc;
 }
