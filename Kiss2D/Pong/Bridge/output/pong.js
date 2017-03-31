@@ -31,7 +31,7 @@ Bridge.assembly("Pong", function ($asm, globals) {
             // Canvas.LoadGraphic("images/ball.png");
 
             // Create the game objects
-            var player = new Kiss2D.GameObject();
+            var player = new Pong.Player();
             player.setX(32);
             player.setY(320);
             player.setWidth(8);
@@ -63,8 +63,7 @@ Bridge.assembly("Pong", function ($asm, globals) {
 
                 // Canvas.DrawGraphic("images/ball.png", 64, 32, 16, 16);
 
-                Kiss2D.Canvas.setFillStyle("red");
-                Kiss2D.Canvas.fillRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
+                player.draw();
 
                 Kiss2D.Canvas.setFillStyle("blue");
                 Kiss2D.Canvas.fillRect(test.getX(), test.getY(), test.getWidth(), test.getHeight());
@@ -107,6 +106,19 @@ Bridge.assembly("Pong", function ($asm, globals) {
         },
         f2: function (e) {
             Pong.App.direction = 0;
+        }
+    });
+
+    Bridge.define("Pong.Player", {
+        inherits: [Kiss2D.GameObject],
+        config: {
+            alias: [
+            "draw", "Kiss2D$IDrawable$draw"
+            ]
+        },
+        draw: function () {
+            Kiss2D.Canvas.setFillStyle("red");
+            Kiss2D.Canvas.fillRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
         }
     });
 });

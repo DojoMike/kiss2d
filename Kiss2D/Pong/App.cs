@@ -25,7 +25,7 @@ namespace Pong
             // Canvas.LoadGraphic("images/ball.png");
 
             // Create the game objects
-            var player = new GameObject();
+            var player = new Player();
             player.X = 32;
             player.Y = 320;
             player.Width = 8;
@@ -54,8 +54,7 @@ namespace Pong
 
                 // Canvas.DrawGraphic("images/ball.png", 64, 32, 16, 16);
 
-                Canvas.FillStyle = "red";
-                Canvas.FillRect(player.X, player.Y, player.Width, player.Height);
+                player.Draw();
 
                 Canvas.FillStyle = "blue";
                 Canvas.FillRect(test.X, test.Y, test.Width, test.Height);
